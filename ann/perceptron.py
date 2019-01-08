@@ -1,5 +1,7 @@
 import numpy as np
 
+from utils.math import sigmoid_prime, sigmoid
+
 
 class Perceptron:
     def __init__(self, n_inputs):
@@ -7,10 +9,10 @@ class Perceptron:
         self.weights = np.array([0] * n_inputs)
         self.bias = 0
 
-    def train_gd(self, X, y, ny, n_iterations, log_step=100):
+    def train_gd(self, X, y, eta, n_iterations, log_step=100):
         for step in range(n_iterations):
-            delta_w = -ny * self.grad_w(X, y)
-            delta_b = -ny * self.grad_b(X, y)
+            delta_w = -eta * self.grad_w(X, y)
+            delta_b = -eta * self.grad_b(X, y)
             self.weights = self.weights + delta_w
             self.bias = self.bias + delta_b
             cost = self.cost(X, y)
@@ -29,18 +31,9 @@ class Perceptron:
         n = X.shape[0]
         return -(1. / n) * np.sum((y - self.predict_proba(X)) * self.predict_proba(X, True))
 
-    @staticmethod
-    def sigmoid(y):
-        return 1. / (1 + np.exp(-y))
-
-    @classmethod
-    def sigmoid_prime(cls, y):
-        sigmoid = cls.sigmoid(y)
-        return sigmoid * (1 - sigmoid)
-
     def predict_proba(self, X, derivative=False):
         y = np.matmul(X, self.weights.transpose()) + self.bias
-        return self.sigmoid_prime(y) if derivative else self.sigmoid(y)
+        return sigmoid_prime(y) if derivative else sigmoid(y)
 
     def predict(self, X, threshold=.5):
         proba = self.predict_proba(X)
