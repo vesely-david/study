@@ -22,15 +22,15 @@ class TestPerceptron(TestCase):
     def test_grad_w(self):
         result_0 = self.clf.grad_w(self.X, self.y)
         expected_0 = [
-            sum([-.5 * Perceptron.sigmoid_prime(0) * 1, .5 * Perceptron.sigmoid_prime(0) * 3]) / 2,
-            sum([-.5 * Perceptron.sigmoid_prime(0) * 2, .5 * Perceptron.sigmoid_prime(0) * 2]) / 2,
-            sum([-.5 * Perceptron.sigmoid_prime(0) * 3, .5 * Perceptron.sigmoid_prime(0) * 1]) / 2
+            - sum([-.5 * Perceptron.sigmoid_prime(0) * 1, .5 * Perceptron.sigmoid_prime(0) * 3]) / 2,
+            - sum([-.5 * Perceptron.sigmoid_prime(0) * 2, .5 * Perceptron.sigmoid_prime(0) * 2]) / 2,
+            - sum([-.5 * Perceptron.sigmoid_prime(0) * 3, .5 * Perceptron.sigmoid_prime(0) * 1]) / 2
         ]
         self.assertListEqual(result_0.tolist(), expected_0)
 
     def test_grad_b(self):
         result_0 = self.clf.grad_b(self.X, self.y)
-        expected_0 = sum([
+        expected_0 = - sum([
             -.5 * Perceptron.sigmoid_prime(0),
             .5 * Perceptron.sigmoid_prime(0)
         ]) / 2
@@ -53,16 +53,16 @@ class TestPerceptron(TestCase):
             self.assertAlmostEqual(r, e)
 
     def test_predict(self):
-        y_pred = self.clf.predict(self.X)
+        y_pred = self.clf.predict_proba(self.X)
         expected = [Perceptron.sigmoid(0)] * 2
         self.assertListEqual(y_pred.tolist(), expected)
 
-        y_pred_prime = self.clf.predict(self.X, True)
+        y_pred_prime = self.clf.predict_proba(self.X, True)
         expected = [Perceptron.sigmoid_prime(0)] * 2
         self.assertListEqual(y_pred_prime.tolist(), expected)
 
     def test_cost(self):
         cost = self.clf.cost(self.X, self.y)
-        predicted = self.clf.predict(self.X)
+        predicted = self.clf.predict_proba(self.X)
         expected = sum([(0. - a) ** 2 for a in predicted]) / 4
         self.assertEqual(cost, expected)
